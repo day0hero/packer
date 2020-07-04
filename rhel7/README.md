@@ -5,18 +5,20 @@ This build installs a RHEL-7.8 base image with LVM. The LVM layout can be altere
 1. Download packer for your OS version: https://www.packer.io/downloads
 2. Create a working directory for your installation: ex: ~/projects/packer
 3. Create the following directories:
-|directory|purpose|
-|------|------|
-|iso | Local directory for the os iso file|
+
+| Directory | Purpose |
+| ---- | ---- |
+| iso | Local directory for the os iso file|
 | http | Place where packer looks for the ks.cfg |
+
 4. Start developing the kickstart file - Use the template in the 'http' directory as a guideline. Make sure 
 that you update the passwords to fit your nees.
 5. Start on the rhel7.json - this is the template that packer uses to build the image.
 
 
 ## Breaking apart the packer build template
-```
 {
+```
   "variables": {
     "rhel_password": "root_password_set_in_kickstart",
     "version": "7.8",
