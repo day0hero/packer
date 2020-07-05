@@ -1,0 +1,58 @@
+---
+- name: post-config 
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  become: true
+  vars:
+    satellite_ip: satellite_ip_address
+    satellite_fqdn: satellite_fqdn
+    satellite_activationkey: satellite_activationkey
+    satellite_organization: satellite_organization
+  tasks:
+    - name: post-config | Update /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        backup: yes
+        state: present
+        line: "{{ satellite_ip }} {{ satellite_fqdn }}"
+
+    - name: post-config | Get the satellite RPM
+      yum:
+        name: "http://{{ satellite_fqdn }}/pub/katello-ca-consumer-latest.noarch.rpm"
+        state: present
+
+    - name: post-config | Register to Satellite
+      redhat_subscription:
+        org_id: "{{ satellite_organization }}"
+        activationkey: "{{ satellite_activationkey }}"
+        state: present
+
+    - name: post-config | Install some packages
+      yum:
+        name:
+          - git
+          - vim
+        state: present
+
+    - name: post-config | Update all the packages
+      yum:
+        name: '*'
+        state: latest
+
+    - name: post-config | Remove cache
+      command: yum clean all
+
+    - name: post-config | Grab full name of katello-ca rpm
+      shell: rpm -qa | grep katello-ca
+      register: katello_ca
+
+    - name: post-config | Unregister
+      redhat_subscription:
+        state: absent
+
+    - name: post-config | Remove katello rpm
+      yum:
+        name: "{{ katello_ca.stdout }}"
+        state: absent
+

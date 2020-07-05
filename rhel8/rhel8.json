@@ -1,0 +1,51 @@
+{
+  "variables": {
+    "rhel_password": "root_password_set_in_kickstart",
+    "version": "8.2",
+    "http_ip": "ip_of_server_hosting_iso_file_for_network_installations"
+  },
+
+  "builders": [{
+      "vm_name": "rhel-packer.qcow2",
+      "iso_urls": [
+	      "absolute_path_of_iso/rhel-server-{{ user `version` }}.iso",
+	      "http://{{ user `http_ip` }}/rhel-server-{{ `version` }}.iso"
+       ],
+      "iso_checksum": "none",
+      "iso_target_path": "iso",
+      "accelerator": "kvm",
+      "output_directory": "output-rhel7",
+      "ssh_username": "root",
+      "ssh_password": "{{ user `rhel_password` }}",
+      "ssh_wait_timeout": "20m",
+      "pause_before_connecting": "10m",
+      "headless": "true",
+      "http_directory": "http",
+      "boot_command": [
+        "<tab> inst.sshd inst.text inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort}}/ks.cfg<enter><wait>"
+      ],
+      "boot_wait": "2s",
+      "shutdown_command": "echo 'packer' | sudo -S shutdown -P now",
+      "type": "qemu",
+      "memory": 4096,
+      "cpus": 4
+    }],
+
+  "provisioners": [{
+  "type": "shell",
+  "inline": ["sudo cp /etc/hosts /etc/hosts.bak"]
+  },
+  {
+  "type": "file",
+  "source": "/home/<local_user_key_to_pass>/.ssh/id_rsa.pub",
+  "destination": "/home/packer/.ssh/authorized_keys"
+  },
+  {
+  "type": "ansible",
+  "playbook_file": "ansible/playbook.yml"
+  },
+  {
+  "type": "shell",
+  "inline": [ "sudo mv /etc/hosts.bak /etc/hosts" ]
+  }]
+}
