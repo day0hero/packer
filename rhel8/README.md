@@ -1,4 +1,4 @@
-# RHEL8 - Vanilla Installationn
+# RHEL8 - Vanilla Installation
 
 This build installs a RHEL-8.2 base image with LVM. The LVM layout can be altered by changing the kickstart file in the http directory. I ran this from a Fedora 31 machine using `packer v1.6.0`. The image provisions a 40G thin provisioned qcow2 image that is carved up with LVM. 
 
