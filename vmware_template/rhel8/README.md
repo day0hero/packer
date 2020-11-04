@@ -2,8 +2,11 @@
 
 The following resources are required in order to provision a template using the vsphere-iso
 provisioner.
-- packer (v1.6.5 used)
-- rhel-8.x iso file
+
+- vsphere/vcenter 7.0
+- terraform v0.12.21
+- packer v1.6.5
+- rhel 8.x iso file
 
 Usually you can use the .HTTP and .HTTPIP services with Packer, but this 
 doesn't seem to work anymore. So, what will need to be done instead is to 
